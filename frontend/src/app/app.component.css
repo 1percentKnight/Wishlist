@@ -1,0 +1,27 @@
+.item-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.item-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.wishlist-form {
+  max-width: 800px;
+  margin: auto;
+}
+
+.button-group {
+  margin-top: 8px;
+}

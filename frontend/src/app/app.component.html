@@ -1,0 +1,25 @@
+<div>
+  <button (click)="addItem()">Add Item</button>
+  <form [formGroup]="wishList" (ngSubmit)="submitForm()">
+    <div formArrayName="items">
+      <div *ngFor="let item of items.controls; let i = index">
+        <div [formGroupName]="i">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Price</mat-label>
+            <input matInput formControlName="price" />
+          </mat-form-field>
+          <button (click)="toggleEditMode(i)">
+            {{ item.get('editMode')?.value ? 'Cancel' : 'Edit' }}
+          </button>
+          <button *ngIf="item.get('editMode')?.value" (click)="saveItem(i)">Save</button>
+          <button (click)="removeItem(i)">Remove</button>
+        </div>
+      </div>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+</div>
