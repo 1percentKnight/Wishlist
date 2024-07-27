@@ -1,22 +1,20 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-  private apiUrl = "http://localhost:3000";
+  private apiUrl = 'http://localhost:3000/api/items';
 
-  constructor(private http: HttpClient) {}
-
-  postFormData(formData: FormData) {
-    console.log("In service");
-    console.log(formData);
-    return this.http.post(`${this.apiUrl}/api/items`, formData);
-  }
+  constructor(private http: HttpClient) { }
 
   getFormData(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/items`);
+    return this.http.get<any>(this.apiUrl);
+  }
+
+  postFormData(formData: FormData): Observable<any> {
+    return this.http.post<any>(this.apiUrl, formData);
   }
 }

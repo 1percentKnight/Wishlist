@@ -28,13 +28,17 @@ export class AppComponent implements OnInit {
     this.dbService.getFormData().subscribe(
       results => {
         const itemsArray = this.wishList.get('items') as FormArray;
+        // console.log("The itemsArray is:", itemsArray);
         results.forEach((item: any) => {
           itemsArray.push(new FormGroup({
             name: new FormControl(item.name, Validators.required),
             price: new FormControl(item.price),
-            editMode: new FormControl(false),
+            imageUrl: new FormControl(item.imageUrl || ''),
+            file: new FormControl(null),
+            editMode: new FormControl(false)
           }));
         });
+        // console.log("The itemsArray2 is:", itemsArray);
       },
       error => {
         console.error("Error fetching data", error);
@@ -50,7 +54,9 @@ export class AppComponent implements OnInit {
     const itemForm = new FormGroup({
       name: new FormControl("", Validators.required),
       price: new FormControl(""),
-      editMode: new FormControl(true),
+      imageUrl: new FormControl(""),
+      file: new FormControl(null),
+      editMode: new FormControl(true)
     });
     this.items.push(itemForm);
   }
@@ -70,16 +76,38 @@ export class AppComponent implements OnInit {
 
   submitForm() {
     const formData = new FormData();
-    formData.append('items', JSON.stringify(this.wishList.value.items)); // Stringify the items
-  
+    const items = this.wishList.value.items.map((item: any) => {
+      if (item.file) {
+        formData.append('images', item.file); // Append file to FormData
+      }
+      return {
+        name: item.name,
+        price: item.price,
+        image: item.file ? item.file.name : item.imageUrl // Reference by filename
+      };
+    });
+    formData.append('items', JSON.stringify(items)); // Append JSON string of items
+
     this.dbService.postFormData(formData).subscribe(
       (response: any) => {
-        console.log("Data stored successfully");
+        console.log("Data stored successfully", response);
       },
       error => {
         console.error("Error submitting data", error);
       }
     );
   }
-  
+
+  onFileChange(event: Event, index: number) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const control = this.items.at(index) as FormGroup;
+        control.get('imageUrl')?.setValue(reader.result as string);
+        control.get('file')?.setValue(file); // Store file object
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 }
