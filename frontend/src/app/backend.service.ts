@@ -1,20 +1,23 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-  private apiUrl = 'http://localhost:3000/api/items';
 
-  constructor(private http: HttpClient) { }
+  private apiUrl = "http://localhost:3000";
 
-  getFormData(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
-  }
+  constructor() { }
+  http = inject(HttpClient)
 
-  postFormData(formData: FormData): Observable<any> {
-    return this.http.post<any>(this.apiUrl, formData);
+  postData(formData: FormGroup): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/api/items`, formData);
+  } 
+
+  getData(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/items`);
   }
 }

@@ -1,113 +1,78 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormArray, ReactiveFormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormArray, ReactiveFormsModule, FormBuilder } from '@angular/forms';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BackendService } from './backend.service';
 
+
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [RouterOutlet, CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
-  title = 'Wishlist';
-  wishList: FormGroup;
+export class AppComponent {
+  title = 'WishList 2.0';
+  wishlistForm: FormGroup;
+  items!: FormArray;
 
-  constructor(private dbService: BackendService) {
-    this.wishList = new FormGroup({
-      items: new FormArray([])
+  constructor(private formBuilder: FormBuilder, private backendService: BackendService) {
+    this.wishlistForm = this.formBuilder.group({
+      items: this.formBuilder.array([])
     });
   }
 
   ngOnInit() {
-    this.dbService.getFormData().subscribe(
+    this.items = this.wishlistForm.get('items') as FormArray;
+    this.backendService.getData().subscribe(
+      data => {
+        this.setItems(data.items);
+      }
+    )
+  }
+
+  setItems(items: any[]) {
+    const formArray = this.wishlistForm.get('items') as FormArray;
+    items.forEach(item => {
+      formArray.push(this.createItem(item));
+    });
+  }
+
+  createItem(item: any): FormGroup {
+    return this.formBuilder.group({
+      name: [item.name] || '',
+      price: [item.price] || '',
+    });
+  }
+
+  addItem(): void {
+    this.items.push(this.createItem({}));
+  }
+
+  submitForm() {
+    console.log(this.wishlistForm.value);
+    this.backendService.postData(this.wishlistForm.value).subscribe(
       results => {
-        const itemsArray = this.wishList.get('items') as FormArray;
-        // console.log("The itemsArray is:", itemsArray);
-        results.forEach((item: any) => {
-          itemsArray.push(new FormGroup({
-            name: new FormControl(item.name, Validators.required),
-            price: new FormControl(item.price),
-            imageUrl: new FormControl(item.imageUrl || ''),
-            file: new FormControl(null),
-            editMode: new FormControl(false)
-          }));
-        });
-        // console.log("The itemsArray2 is:", itemsArray);
+        console.log("Data sent successfully");
       },
       error => {
-        console.error("Error fetching data", error);
+        console.log("Error posting data");
       }
     );
-  }
-
-  get items() {
-    return this.wishList.get('items') as FormArray;
-  }
-
-  addItem() {
-    const itemForm = new FormGroup({
-      name: new FormControl("", Validators.required),
-      price: new FormControl(""),
-      imageUrl: new FormControl(""),
-      file: new FormControl(null),
-      editMode: new FormControl(true)
-    });
-    this.items.push(itemForm);
-  }
+  };
 
   removeItem(index: number) {
     this.items.removeAt(index);
   }
 
-  toggleEditMode(index: number) {
-    const control = this.items.at(index) as FormGroup;
-    control.get('editMode')?.setValue(!control.get('editMode')?.value);
+  processImage(event: Event, index: number): void {
+  
   }
 
-  saveItem(index: number) {
-    this.toggleEditMode(index);
-  }
-
-  submitForm() {
-    const formData = new FormData();
-    const items = this.wishList.value.items.map((item: any) => {
-      if (item.file) {
-        formData.append('images', item.file); // Append file to FormData
-      }
-      return {
-        name: item.name,
-        price: item.price,
-        image: item.file ? item.file.name : item.imageUrl // Reference by filename
-      };
-    });
-    formData.append('items', JSON.stringify(items)); // Append JSON string of items
-
-    this.dbService.postFormData(formData).subscribe(
-      (response: any) => {
-        console.log("Data stored successfully", response);
-      },
-      error => {
-        console.error("Error submitting data", error);
-      }
-    );
-  }
-
-  onFileChange(event: Event, index: number) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const control = this.items.at(index) as FormGroup;
-        control.get('imageUrl')?.setValue(reader.result as string);
-        control.get('file')?.setValue(file); // Store file object
-      };
-      reader.readAsDataURL(file);
-    }
-  }
 }

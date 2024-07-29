@@ -1,46 +1,34 @@
-<div class="form-container">
-  <form [formGroup]="wishList" (ngSubmit)="submitForm()">
+<form [formGroup]="wishlistForm" (ngSubmit)="submitForm()">
     <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Image</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody formArrayName="items">
-        <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-          <td>
-            <mat-form-field>
-              <mat-label>Name</mat-label>
-              <input matInput formControlName="name" />
-            </mat-form-field>
-          </td>
-          <td>
-            <mat-form-field>
-              <mat-label>Price</mat-label>
-              <input matInput formControlName="price" />
-            </mat-form-field>
-          </td>
-          <td class="image-cell">
-            <label *ngIf="!item.get('imageUrl')?.value" for="fileInput_{{i}}" class="custom-file-label">Choose File</label>
-            <input id="fileInput_{{i}}" type="file" (change)="onFileChange($event, i)" class="custom-file-input" />
-            <img *ngIf="item.get('imageUrl')?.value" [src]="item.get('imageUrl')?.value" alt="Image" />
-          </td>
-          <td>
-            <button type="button" (click)="toggleEditMode(i)">
-              {{ item.get('editMode')?.value ? 'Cancel' : 'Edit' }}
-            </button>
-            <button *ngIf="item.get('editMode')?.value" type="button" (click)="saveItem(i)">Save</button>
-            <button type="button" (click)="removeItem(i)">Remove</button>
-          </td>
-        </tr>
-      </tbody>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody formArrayName="items">
+            <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                <td>
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput formControlName="name" />
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field>
+                        <mat-label>Price</mat-label>
+                        <input matInput formControlName="price" />
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button mat-raised-button type="button" (click)="removeItem(i)">Remove</button>
+
+                </td>
+            </tr>
+        </tbody>
     </table>
-    <div class="form-actions">
-      <button type="button" (click)="addItem()">Add Item</button>
-      <button type="submit">Submit</button>
+    <div>
+        <button mat-raised-button type="button" (click)="addItem()">Add Item</button>
+        <button mat-raised-button type="submit">Submit</button>
     </div>
-  </form>
-</div>
+</form>

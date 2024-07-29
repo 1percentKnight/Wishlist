@@ -1,1 +1,8 @@
-[]
+{
+    "items": [
+        {
+            "name": "Solar Panel System",
+            "price": "400000"
+        }
+    ]
+}
