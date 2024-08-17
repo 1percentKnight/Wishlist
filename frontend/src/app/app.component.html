@@ -1,34 +1,71 @@
 <form [formGroup]="wishlistForm" (ngSubmit)="submitForm()">
+  <div class="container">
     <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody formArrayName="items">
-            <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-                <td>
-                    <mat-form-field>
-                        <mat-label>Name</mat-label>
-                        <input matInput formControlName="name" />
-                    </mat-form-field>
-                </td>
-                <td>
-                    <mat-form-field>
-                        <mat-label>Price</mat-label>
-                        <input matInput formControlName="price" />
-                    </mat-form-field>
-                </td>
-                <td>
-                    <button mat-raised-button type="button" (click)="removeItem(i)">Remove</button>
-
-                </td>
-            </tr>
-        </tbody>
+      <thead>
+        <tr>
+          <th>Priority</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="items">
+        <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <td>
+            <div class="move-buttons">
+              <button mat-icon-button type="button" (click)="moveRowUp(i)" [disabled]="i === 0">
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="moveRowDown(i)" [disabled]="i === items.length - 1">
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+            </div>
+          </td>
+          <td>
+            <mat-form-field appearance="fill">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field appearance="fill">
+              <mat-label>Price</mat-label>
+              <input matInput formControlName="price" />
+            </mat-form-field>
+          </td>
+          <td>
+            <div class="quantity-controls">
+              <button mat-icon-button type="button" (click)="decreaseQuantity(i)">-</button>
+              <input matInput formControlName="quantity" readonly />
+              <button mat-icon-button type="button" (click)="increaseQuantity(i)">+</button>
+            </div>
+          </td>
+          <td>
+            <div class="total-price-column">
+              {{ calculateTotalPrice(item) | indianCurrency }}
+            </div>
+          </td>
+          <td>
+            <button mat-raised-button color="warn" type="button" (click)="removeItem(i)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
     </table>
-    <div>
-        <button mat-raised-button type="button" (click)="addItem()">Add Item</button>
-        <button mat-raised-button type="submit">Submit</button>
+    <div class="button-group">
+      <div class="inner-button-group">
+        <span class="total-price">
+          <strong>Total: </strong> {{ calculateGrandTotal() | indianCurrency }}
+        </span>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" type="button" (click)="addItem()">Add Item</button>
+          <button mat-raised-button color="accent" type="submit">Submit</button>
+        </div>
+      </div>
     </div>
+    <div class="link-container">
+      <a href="assets/pcpartlist.html" target="_blank">Click for PC Parts</a>
+    </div>
+  </div>
 </form>

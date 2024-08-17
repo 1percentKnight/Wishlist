@@ -15,7 +15,7 @@ export class BackendService {
 
   postData(formData: FormGroup): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/api/items`, formData);
-  } 
+  }
 
   getData(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/api/items`);
