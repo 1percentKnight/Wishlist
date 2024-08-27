@@ -35,9 +35,16 @@ app.get('/api/items', (req, res) => {
             console.log("Error reading file: ", err);
             return res.status(500).json({ error: "Internal Server Error" });
         }
-        const data = JSON.parse(content);
-        return res.status(200).json(data);
-
+        if (!content) {
+            return res.status(204).json({ message: "No content available" });
+        }
+        try {
+            const data = JSON.parse(content);
+            return res.status(200).json(data);
+        } catch (parseErr) {
+            console.log("Error parsing JSON: ", parseErr);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
     });
 });
 
