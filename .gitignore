@@ -1,0 +1,52 @@
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build output
+/dist
+/.angular/cache
+/.angular/vite
+/.vscode
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Environment files
+*.env
+
+# Other files
+*.swp
+*.swo
+
+# Backend
+backend/node_modules/
+
+# Frontend
+frontend/node_modules/
+frontend/.angular/cache
+frontend/.angular/vite
+frontend/src/*.js
+frontend/src/*.js.map
+frontend/src/*.tsbuildinfo
+frontend/.vscode/
+
+# IDEs
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Windows specific
+Thumbs.db
+Desktop.ini
+
+# Mac specific
+.DS_Store
+
+# VSCode specific
+.vscode/
